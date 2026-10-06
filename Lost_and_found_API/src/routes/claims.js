@@ -2,6 +2,8 @@ import { Router } from "express";
 import pool from "../db.js";
 import { authenticate } from "../middleware/auth.js";
 import { get_claim_on_item_by_id, my_claims, post_claim, update_claim_status } from "../Controllers/ClaimCtrl.js";
+import upload from "../middleware/upload.js";
+import { uploadEvidence } from "../Controllers/ClaimCtrl.js";
 
 const router = Router();
 
@@ -60,6 +62,8 @@ router.post("/", authenticate, async (req, res) => {
   }
 });
 
+
+
 router.get("/my", authenticate, async (req, res) => {
   try {
     const result = await pool.query(
@@ -88,6 +92,8 @@ router.get("/my", authenticate, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+
 
 router.get("/item/:itemId", authenticate, async (req, res) => {
   try {
@@ -128,6 +134,8 @@ router.get("/item/:itemId", authenticate, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+
 
 router.patch("/:id", authenticate, async (req, res) => {
   try {
@@ -208,6 +216,9 @@ router.patch("/:id", authenticate, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+
+router.post("/:claimId/evidence", authenticate ,upload.single("evidence"),uploadEvidence);
 router.post("/", authenticate, post_claim);
 router.get("/my", authenticate, my_claims);
 router.get("/item/:itemId", authenticate, get_claim_on_item_by_id);
